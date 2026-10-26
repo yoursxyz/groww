@@ -1,978 +1,107 @@
+
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Live F&O P&L Dashboard</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg: #f0f4f8;
-  --surface: #ffffff;
-  --surface-2: #f8fafc;
-  --ink: #0f172a;
-  --muted: #64748b;
-  --border: #e2e8f0;
-  --green: #10b981;
-  --green-light: #d1fae5;
-  --green-glow: rgba(16,185,129,0.15);
-  --red: #ef4444;
-  --red-light: #fee2e2;
-  --red-glow: rgba(239,68,68,0.15);
-  --accent: #3b82f6;
-  --accent-light: #dbeafe;
-  --accent-glow: rgba(59,130,246,0.15);
-  --purple: #8b5cf6;
-  --orange: #f97316;
-  --radius: 16px;
-  --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 24px -6px rgba(0,0,0,0.08);
-  --shadow-lg: 0 1px 3px rgba(0,0,0,0.04), 0 16px 40px -8px rgba(0,0,0,0.12);
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: "Inter", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
-  background: var(--bg);
-  color: var(--ink);
-  min-height: 100vh;
-  line-height: 1.5;
-}
-
-.container {
-  max-width: 1300px;
-  margin: 0 auto;
-  padding: 24px;
-}
-
-/* Header */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.brand-icon {
-  width: 52px; height: 52px;
-  background: linear-gradient(135deg, var(--accent), var(--purple));
-  border-radius: 16px;
-  display: grid; place-items: center;
-  color: #fff; font-size: 22px; font-weight: 800;
-  box-shadow: 0 4px 16px var(--accent-glow);
-}
-
-.brand h1 {
-  font-family: "Rajdhani", sans-serif;
-  font-size: clamp(1.7rem, 2.4vw, 2.4rem);
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  line-height: 1.1;
-}
-
-.brand p {
-  font-size: 0.84rem;
-  color: var(--muted);
-  margin-top: 2px;
-}
-
-.live-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--green-light);
-  color: var(--green);
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.9px;
-  padding: 8px 18px;
-  border-radius: 999px;
-  border: 1px solid rgba(16,185,129,0.25);
-}
-
-.pulse {
-  width: 8px; height: 8px;
-  background: var(--green);
-  border-radius: 50%;
-  animation: pulse 1.6s infinite;
-}
-
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.5); }
-  70% { box-shadow: 0 0 0 10px rgba(16,185,129,0); }
-  100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
-}
-
-.last-update {
-  font-size: 0.75rem;
-  color: var(--muted);
-  margin-top: 4px;
-  text-align: right;
-}
-
-/* CORS Alert */
-.cors-alert {
-  background: linear-gradient(135deg, #fef3c7, #fde68a);
-  border: 1px solid #f59e0b;
-  border-radius: 14px;
-  padding: 18px 22px;
-  margin-bottom: 22px;
-  font-size: 0.88rem;
-  color: #78350f;
-}
-
-.cors-alert strong {
-  display: block;
-  margin-bottom: 6px;
-  font-size: 0.95rem;
-}
-
-.cors-alert ol {
-  margin-left: 18px;
-  margin-top: 8px;
-}
-
-.cors-alert li {
-  margin-bottom: 4px;
-}
-
-.cors-alert a {
-  color: #92400e;
-  font-weight: 600;
-}
-
-.cors-alert code {
-  background: rgba(0,0,0,0.06);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 0.82rem;
-}
-
-/* Grid */
-.grid {
-  display: grid;
-  gap: 20px;
-  grid-template-columns: repeat(12, 1fr);
-}
-
-.card {
-  background: var(--surface);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
-  padding: 22px;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.card:hover {
-  box-shadow: var(--shadow-lg);
-}
-
-.col-3 { grid-column: span 3; }
-.col-4 { grid-column: span 4; }
-.col-6 { grid-column: span 6; }
-.col-8 { grid-column: span 8; }
-.col-9 { grid-column: span 9; }
-.col-12 { grid-column: span 12; }
-
-@media (max-width: 1024px) {
-  .col-3, .col-4, .col-6, .col-8, .col-9 { grid-column: span 12; }
-}
-
-.card-title {
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--muted);
-  margin-bottom: 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  justify-content: space-between;
-}
-
-.card-title-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* Nifty Hero */
-.nifty-hero {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  color: #fff;
-  border: none;
-  position: relative;
-  overflow: hidden;
-}
-
-.nifty-hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 15% 110%, rgba(59,130,246,0.28), transparent 55%),
-    radial-gradient(circle at 85% -10%, rgba(16,185,129,0.2), transparent 50%),
-    radial-gradient(circle at 50% 50%, rgba(139,92,246,0.08), transparent 60%);
-  pointer-events: none;
-}
-
-.nifty-hero .card-title { color: #94a3b8; }
-
-.nifty-value {
-  font-family: "Rajdhani", sans-serif;
-  font-size: clamp(2.8rem, 4.5vw, 4rem);
-  font-weight: 700;
-  line-height: 1;
-  position: relative;
-}
-
-.nifty-change {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 1.05rem;
-  font-weight: 700;
-  margin-top: 10px;
-  padding: 5px 14px;
-  border-radius: 10px;
-  position: relative;
-}
-
-.nifty-change.up { background: rgba(16,185,129,0.18); color: #34d399; }
-.nifty-change.down { background: rgba(239,68,68,0.18); color: #f87171; }
-
-.nifty-meta {
-  display: flex;
-  gap: 28px;
-  margin-top: 22px;
-  flex-wrap: wrap;
-}
-
-.meta-item {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.meta-label { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; }
-.meta-value { font-family: "Rajdhani", sans-serif; font-size: 1.15rem; font-weight: 700; color: #e2e8f0; }
-
-/* Refresh Button */
-.refresh-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--surface-2);
-  color: var(--ink);
-  font-size: 0.78rem;
-  font-weight: 700;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.refresh-btn:hover {
-  background: var(--accent-light);
-  color: var(--accent);
-  border-color: var(--accent);
-}
-
-.refresh-btn.spin svg {
-  animation: spin 0.7s linear;
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* Inputs */
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 14px;
-}
-
-.input-group label {
-  font-size: 0.74rem;
-  font-weight: 600;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-}
-
-.input-group input, .input-group select {
-  padding: 12px 14px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  font-size: 0.95rem;
-  font-family: inherit;
-  background: var(--surface-2);
-  color: var(--ink);
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.input-group input:focus, .input-group select:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 4px var(--accent-glow);
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 22px;
-  border: none;
-  border-radius: 12px;
-  font-size: 0.92rem;
-  font-weight: 700;
-  font-family: inherit;
-  cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, var(--accent), var(--purple));
-  color: #fff;
-  box-shadow: 0 4px 14px var(--accent-glow);
-}
-
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--accent-glow); }
-
-.btn-danger {
-  background: linear-gradient(135deg, var(--red), var(--orange));
-  color: #fff;
-  box-shadow: 0 4px 14px var(--red-glow);
-}
-
-.btn-sm {
-  padding: 6px 12px;
-  font-size: 0.78rem;
-}
-
-/* P&L Cards */
-.pl-card {
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.pl-card::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 4px;
-}
-
-.pl-card.profit::before { background: linear-gradient(90deg, var(--green), #34d399); }
-.pl-card.loss::before { background: linear-gradient(90deg, var(--red), #f97316); }
-.pl-card.neutral::before { background: linear-gradient(90deg, var(--muted), #cbd5e1); }
-
-.pl-label {
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--muted);
-  margin-bottom: 10px;
-}
-
-.pl-value {
-  font-family: "Rajdhani", sans-serif;
-  font-size: clamp(1.8rem, 3vw, 2.6rem);
-  font-weight: 700;
-  line-height: 1;
-}
-
-.pl-value.profit { color: var(--green); }
-.pl-value.loss { color: var(--red); }
-
-.pl-sub {
-  font-size: 0.82rem;
-  color: var(--muted);
-  margin-top: 6px;
-  font-weight: 500;
-}
-
-/* Position table */
-.positions-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  font-size: 0.88rem;
-}
-
-.positions-table th {
-  text-align: left;
-  padding: 12px 14px;
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: var(--muted);
-  border-bottom: 1px solid var(--border);
-  background: var(--surface-2);
-  white-space: nowrap;
-}
-
-.positions-table td {
-  padding: 14px;
-  border-bottom: 1px solid var(--border);
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.positions-table tr:last-child td { border-bottom: none; }
-
-.badge {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: 6px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.badge-ce { background: var(--accent-light); color: var(--accent); }
-.badge-pe { background: #f3e8ff; color: #7c3aed; }
-.badge-fut { background: #fef3c7; color: #d97706; }
-
-.price-up { color: var(--green); }
-.price-down { color: var(--red); }
-
-/* Footer */
-.footer-note {
-  text-align: center;
-  font-size: 0.78rem;
-  color: var(--muted);
-  margin-top: 24px;
-}
-
-/* Scrollbar */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
-/* Responsive */
-@media (max-width: 600px) {
-  .container { padding: 14px; }
-  .card { padding: 16px; }
-  .nifty-meta { gap: 16px; }
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hello Animation</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      padding: 0;
+      margin: 0;
+      background: #f8f8f8;
+    }
+
+    .new__bg {
+      width: 100%;
+      min-height: 100vh;
+      background: #f8f8f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .hello__div {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      margin: 0 auto;
+      text-align: center;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .hello__svg {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-miterlimit: 10;
+      stroke-width: 48px;
+      stroke-dasharray: 5800px;
+      stroke-dashoffset: 5800px;
+      animation: anim__hello 5s linear forwards;
+      width: 100%;
+      display: block;
+      margin: 0 auto;
+    }
+
+    @keyframes anim__hello {
+      0% {
+        stroke-dashoffset: 5800;
+      }
+
+      25% {
+        stroke-dashoffset: 5800;
+      }
+
+      100% {
+        stroke-dashoffset: 0;
+      }
+    }
+  </style>
 </head>
+
 <body>
-
-<div class="container">
-
-  <div class="header">
-    <div class="brand">
-      <div class="brand-icon">F&O</div>
-      <div>
-        <h1>Live F&O P&L Dashboard</h1>
-        <p>NIFTY + F&O positions with real-time P&L tracking</p>
-      </div>
-    </div>
-    <div>
-      <div class="live-badge">
-        <span class="pulse"></span>
-        Live Market
-      </div>
-      <div class="last-update" id="lastUpdate">Last update: --</div>
+  <div class="new__bg">
+    <div class="hello__div">
+      <svg
+        class="hello__svg"
+        viewBox="0 0 1230.94 414.57"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M-293.58-104.62S-103.61-205.49-60-366.25c9.13-32.45,9-58.31,0-74-10.72-18.82-49.69-33.21-75.55,31.94-27.82,70.11-52.22,377.24-44.11,322.48s34-176.24,99.89-183.19c37.66-4,49.55,23.58,52.83,47.92a117.06,117.06,0,0,1-3,45.32c-7.17,27.28-20.47,97.67,33.51,96.86,66.93-1,131.91-53.89,159.55-84.49,31.1-36.17,31.1-70.64,19.27-90.25-16.74-29.92-69.47-33-92.79,16.73C62.78-179.86,98.7-93.8,159-81.63S302.7-99.55,393.3-269.92c29.86-58.16,52.85-114.71,46.14-150.08-7.44-39.21-59.74-54.5-92.87-8.7-47,65-61.78,266.62-34.74,308.53S416.62-58,481.52-130.31s133.2-188.56,146.54-256.23c14-71.15-56.94-94.64-88.4-47.32C500.53-375,467.58-229.49,503.3-127a73.73,73.73,0,0,0,23.43,33.67c25.49,20.23,55.1,16,77.46,6.32a111.25,111.25,0,0,0,30.44-19.87c37.73-34.23,29-36.71,64.58-127.53C724-284.3,785-298.63,821-259.13a71,71,0,0,1,13.69,22.56c17.68,46,6.81,80-6.81,107.89-12,24.62-34.56,42.72-61.45,47.91-23.06,4.45-48.37-.35-66.48-24.27a78.88,78.88,0,0,1-12.66-25.8c-14.75-51,4.14-88.76,11-101.41,6.18-11.39,37.26-69.61,103.42-42.24,55.71,23.05,100.66-23.31,100.66-23.31"
+          transform="translate(311.08 476.02)"
+        />
+      </svg>
     </div>
   </div>
 
-  <!-- CORS Notice -->
-  <div class="cors-alert" id="corsAlert">
-    <strong>⚠️ CORS Issue? Browser API block kar raha hai?</strong>
-    Groww API directly browser se call karne par CORS error aa sakta hai. Iska solution:
-    <ol>
-      <li><strong>Chrome Extension:</strong> "Allow CORS" ya "CORS Unblock" extension install karo aur ON karke page refresh karo.</li>
-      <li><strong>Chrome Flags:</strong> Chrome ko <code>--disable-web-security</code> flag ke saath open karo (separate profile use karein).</li>
-      <li><strong>VS Code Live Server:</strong> File ko directly mat kholo. VS Code ka "Live Server" extension use karo.</li>
-    </ol>
-    <div style="margin-top:8px;font-size:0.82rem;color:#92400e;">
-      Manual refresh button use karein. Auto-refresh remove kar diya gaya hai taaki IP block na ho.
-    </div>
-  </div>
+  <script>
+    const hello = document.querySelector(".hello__div");
 
-  <div class="grid">
+    setInterval(hello__function, 20000);
 
-    <!-- NIFTY Hero -->
-    <div class="card col-8 nifty-hero" id="niftyCard">
-      <div class="card-title">
-        <span class="card-title-left">NIFTY 50 Index</span>
-        <button class="refresh-btn" id="niftyRefreshBtn" onclick="manualRefreshNifty()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
-          Refresh
-        </button>
-      </div>
-      <div class="nifty-value" id="niftyPrice">---.--</div>
-      <div class="nifty-change" id="niftyChange">-- (--%)</div>
-      <div class="nifty-meta">
-        <div class="meta-item">
-          <span class="meta-label">Open</span>
-          <span class="meta-value" id="niftyOpen">--</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">High</span>
-          <span class="meta-value" id="niftyHigh">--</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Low</span>
-          <span class="meta-value" id="niftyLow">--</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Prev Close</span>
-          <span class="meta-value" id="niftyPrev">--</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Day Change</span>
-          <span class="meta-value" id="niftyDayChange">--</span>
-        </div>
-      </div>
-    </div>
+    function hello__function() {
+      hello.style.display = "none";
 
-    <!-- Add Position -->
-    <div class="card col-4">
-      <div class="card-title">
-        <span class="card-title-left">New Position</span>
-      </div>
-      <div class="input-group">
-        <label>F&O Symbol</label>
-        <input type="text" id="symInput" placeholder="e.g. NIFTY26OCT22600CE" value="NIFTY26OCT22600CE">
-      </div>
-      <div class="input-group">
-        <label>Quantity (Lots)</label>
-        <input type="number" id="qtyInput" placeholder="e.g. 1" value="1">
-      </div>
-      <div class="input-group">
-        <label>Entry Price (₹)</label>
-        <input type="number" step="0.01" id="entryInput" placeholder="e.g. 150.00" value="150">
-      </div>
-      <div style="display:flex; gap:10px;">
-        <button class="btn btn-primary" onclick="addPosition()">Add Position</button>
-        <button class="btn btn-danger" onclick="clearAll()">Clear All</button>
-      </div>
-    </div>
+      setTimeout(function () {
+        hello.style.display = "flex";
 
-    <!-- Summary Cards -->
-    <div class="card col-3 pl-card neutral" id="investmentCard">
-      <div class="pl-label">Total Investment</div>
-      <div class="pl-value" id="totalInvestment">₹0.00</div>
-      <div class="pl-sub">Across all open positions</div>
-    </div>
+        const svg = hello.querySelector(".hello__svg");
 
-    <div class="card col-3 pl-card neutral" id="pnlCard">
-      <div class="pl-label">Unrealized P&L</div>
-      <div class="pl-value" id="totalPnL">₹0.00</div>
-      <div class="pl-sub" id="pnlSub">--</div>
-    </div>
-
-    <div class="card col-3 pl-card neutral" id="countCard">
-      <div class="pl-label">Open Positions</div>
-      <div class="pl-value" id="openCount">0</div>
-      <div class="pl-sub">Active F&O trades</div>
-    </div>
-
-    <div class="card col-3 pl-card neutral" id="roiCard">
-      <div class="pl-label">Total ROI</div>
-      <div class="pl-value" id="totalROI">0.00%</div>
-      <div class="pl-sub" id="roiSub">Return on investment</div>
-    </div>
-
-    <!-- Positions Table -->
-    <div class="card col-12">
-      <div class="card-title">
-        <span class="card-title-left">Open Positions</span>
-        <button class="refresh-btn" id="posRefreshBtn" onclick="manualRefreshPositions()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
-          Refresh All
-        </button>
-      </div>
-      <div style="overflow-x:auto;">
-        <table class="positions-table">
-          <thead>
-            <tr>
-              <th>Symbol</th>
-              <th>Type</th>
-              <th>Qty</th>
-              <th>Entry</th>
-              <th>LTP</th>
-              <th>Day Chg</th>
-              <th>Day Chg %</th>
-              <th>Volume</th>
-              <th>OI Chg %</th>
-              <th>Investment</th>
-              <th>P&L</th>
-              <th>P&L %</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="positionsBody">
-            <tr>
-              <td colspan="13" style="text-align:center;color:var(--muted);padding:32px;">
-                No positions added yet. Use the form above to add a trade.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="footer-note">
-    Data sourced from Groww APIs. P&L is indicative and for reference only. Use Refresh buttons to fetch latest data manually.
-  </div>
-
-</div>
-
-<script>
-/* ---------- State ---------- */
-let positions = [];
-let niftyData = null;
-
-/* ---------- Helpers ---------- */
-const fmt = (n) => {
-  if (n == null || isNaN(n)) return "--";
-  return "₹" + n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-};
-const fmtNum = (n) => (n == null || isNaN(n)) ? "--" : n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const fmtInt = (n) => (n == null || isNaN(n)) ? "--" : n.toLocaleString("en-IN");
-const fmtPct = (n) => (n == null || isNaN(n)) ? "--" : (n >= 0 ? "+" : "") + n.toFixed(2) + "%";
-
-function getLotSize(symbol) {
-  const s = symbol.toUpperCase();
-  if (s.startsWith("NIFTY")) return 25;
-  if (s.startsWith("BANKNIFTY") || s.startsWith("NIFTYBANK")) return 15;
-  if (s.startsWith("FINNIFTY")) return 25;
-  if (s.startsWith("SENSEX")) return 10;
-  return 25;
-}
-
-function detectType(symbol) {
-  const s = symbol.toUpperCase();
-  if (s.endsWith("CE")) return "CE";
-  if (s.endsWith("PE")) return "PE";
-  if (s.includes("FUT")) return "FUT";
-  return "OPT";
-}
-
-/* ---------- CORS Error Handler ---------- */
-function handleFetchError(err, context) {
-  console.error(context + " fetch error:", err);
-  if (err.message && err.message.includes("CORS")) {
-    alert("CORS Error: Browser ne API request block kar di.\n\nSolution:\n1. Chrome extension 'Allow CORS' install karo\n2. Ya Chrome ko --disable-web-security flag se open karo\n3. Ya VS Code Live Server use karo");
-  }
-}
-
-/* ---------- Fetch NIFTY ---------- */
-async function fetchNifty() {
-  try {
-    const res = await fetch("https://groww.in/v1/api/stocks_data/v1/accord_points/exchange/NSE/segment/CASH/latest_indices_ohlc/NIFTY", {
-      method: "GET",
-      headers: { "Accept": "application/json" }
-    });
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    const data = await res.json();
-    niftyData = data;
-    renderNifty();
-    updateLastUpdate();
-    return true;
-  } catch (e) {
-    handleFetchError(e, "Nifty");
-    return false;
-  }
-}
-
-function renderNifty() {
-  if (!niftyData) return;
-  const d = niftyData;
-  const close = parseFloat(d.close ?? 0);
-  const open = parseFloat(d.open ?? 0);
-  const high = parseFloat(d.high ?? 0);
-  const low = parseFloat(d.low ?? 0);
-  const dayChange = parseFloat(d.dayChange ?? 0);
-  const dayChangePerc = parseFloat(d.dayChangePerc ?? 0);
-  const prevClose = close - dayChange;
-
-  document.getElementById("niftyPrice").textContent = fmtNum(close);
-  const chEl = document.getElementById("niftyChange");
-  chEl.textContent = `${dayChange >= 0 ? "+" : ""}${fmtNum(dayChange)} (${fmtPct(dayChangePerc)})`;
-  chEl.className = "nifty-change " + (dayChange >= 0 ? "up" : "down");
-
-  document.getElementById("niftyOpen").textContent = fmtNum(open);
-  document.getElementById("niftyHigh").textContent = fmtNum(high);
-  document.getElementById("niftyLow").textContent = fmtNum(low);
-  document.getElementById("niftyPrev").textContent = fmtNum(prevClose);
-  document.getElementById("niftyDayChange").textContent = fmtNum(dayChange);
-}
-
-/* ---------- Fetch single F&O ---------- */
-async function fetchFnoPrice(symbol) {
-  try {
-    const url = `https://groww.in/v1/api/stocks_fo_data/v1/tr_live_prices/exchange/NSE/segment/FNO/${encodeURIComponent(symbol)}/latest`;
-    const res = await fetch(url, { method: "GET", headers: { "Accept": "application/json" } });
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    const data = await res.json();
-    return data;
-  } catch (e) {
-    console.error("F&O fetch failed for", symbol, e);
-    return null;
-  }
-}
-
-/* ---------- Manual Refresh ---------- */
-async function manualRefreshNifty() {
-  const btn = document.getElementById("niftyRefreshBtn");
-  btn.classList.add("spin");
-  btn.disabled = true;
-  const ok = await fetchNifty();
-  setTimeout(() => {
-    btn.classList.remove("spin");
-    btn.disabled = false;
-  }, 700);
-  if (!ok) {
-    alert("NIFTY data fetch nahi ho paya. CORS extension ON hai?");
-  }
-}
-
-async function manualRefreshPositions() {
-  const btn = document.getElementById("posRefreshBtn");
-  btn.classList.add("spin");
-  btn.disabled = true;
-  await refreshPositions();
-  setTimeout(() => {
-    btn.classList.remove("spin");
-    btn.disabled = false;
-  }, 700);
-}
-
-/* ---------- Positions ---------- */
-function addPosition() {
-  const sym = document.getElementById("symInput").value.trim().toUpperCase();
-  const qtyLots = parseInt(document.getElementById("qtyInput").value || "0", 10);
-  const entry = parseFloat(document.getElementById("entryInput").value || "0");
-  if (!sym || qtyLots <= 0 || entry <= 0) {
-    alert("Please enter valid Symbol, Quantity and Entry Price.");
-    return;
-  }
-  const lot = getLotSize(sym);
-  const totalQty = qtyLots * lot;
-  positions.push({
-    id: Date.now() + Math.random(),
-    symbol: sym,
-    lots: qtyLots,
-    lotSize: lot,
-    qty: totalQty,
-    entry: entry,
-    ltp: null,
-    dayChange: null,
-    dayChangePerc: null,
-    volume: null,
-    oiDayChangePerc: null,
-    investment: totalQty * entry,
-    pnl: null,
-    pnlPct: null,
-    updated: false
-  });
-  savePositions();
-  renderPositions();
-}
-
-function removePosition(id) {
-  positions = positions.filter(p => p.id !== id);
-  savePositions();
-  renderPositions();
-  updateSummary();
-}
-
-function clearAll() {
-  if (!positions.length) return;
-  if (!confirm("Clear all positions?")) return;
-  positions = [];
-  savePositions();
-  renderPositions();
-  updateSummary();
-}
-
-function savePositions() {
-  try { localStorage.setItem("fno_positions_v3", JSON.stringify(positions)); } catch (e) {}
-}
-
-function loadPositions() {
-  try {
-    const raw = localStorage.getItem("fno_positions_v3");
-    if (raw) positions = JSON.parse(raw);
-  } catch (e) {}
-}
-
-/* ---------- Rendering ---------- */
-function renderPositions() {
-  const tbody = document.getElementById("positionsBody");
-  if (!positions.length) {
-    tbody.innerHTML = `<tr><td colspan="13" style="text-align:center;color:var(--muted);padding:32px;">No positions added yet. Use the form above to add a trade.</td></tr>`;
-    updateSummary();
-    return;
-  }
-
-  let html = "";
-  for (const p of positions) {
-    const type = detectType(p.symbol);
-    const badgeClass = type === "CE" ? "badge-ce" : type === "PE" ? "badge-pe" : "badge-fut";
-    const ltpStr = p.ltp != null ? fmtNum(p.ltp) : "--";
-    const dayChgStr = p.dayChange != null ? (p.dayChange >= 0 ? "+" : "") + fmtNum(p.dayChange) : "--";
-    const dayChgClass = p.dayChange != null ? (p.dayChange >= 0 ? "price-up" : "price-down") : "";
-    const dayChgPctStr = p.dayChangePerc != null ? fmtPct(p.dayChangePerc) : "--";
-    const volStr = p.volume != null ? fmtInt(p.volume) : "--";
-    const oiStr = p.oiDayChangePerc != null ? fmtPct(p.oiDayChangePerc) : "--";
-    const oiClass = p.oiDayChangePerc != null ? (p.oiDayChangePerc >= 0 ? "price-up" : "price-down") : "";
-    const pnlStr = p.pnl != null ? fmt(p.pnl) : "--";
-    const pnlClass = p.pnl != null ? (p.pnl >= 0 ? "price-up" : "price-down") : "";
-    const pnlPctStr = p.pnlPct != null ? (p.pnlPct >= 0 ? "+" : "") + p.pnlPct.toFixed(2) + "%" : "--";
-
-    html += `<tr data-id="${p.id}">
-      <td><strong>${p.symbol}</strong></td>
-      <td><span class="badge ${badgeClass}">${type}</span></td>
-      <td>${p.lots} × ${p.lotSize}</td>
-      <td>${fmtNum(p.entry)}</td>
-      <td><strong>${ltpStr}</strong></td>
-      <td class="${dayChgClass}">${dayChgStr}</td>
-      <td class="${dayChgClass}">${dayChgPctStr}</td>
-      <td>${volStr}</td>
-      <td class="${oiClass}">${oiStr}</td>
-      <td>${fmt(p.investment)}</td>
-      <td class="${pnlClass}"><strong>${pnlStr}</strong></td>
-      <td class="${pnlClass}">${pnlPctStr}</td>
-      <td><button class="btn btn-danger btn-sm" onclick="removePosition(${p.id})">Remove</button></td>
-    </tr>`;
-  }
-  tbody.innerHTML = html;
-  updateSummary();
-}
-
-function updateSummary() {
-  let totalInv = 0;
-  let totalPnl = 0;
-  for (const p of positions) {
-    totalInv += p.investment || 0;
-    if (p.pnl != null) totalPnl += p.pnl;
-  }
-
-  const roi = totalInv > 0 ? (totalPnl / totalInv) * 100 : 0;
-
-  document.getElementById("totalInvestment").textContent = fmt(totalInv);
-  document.getElementById("totalPnL").textContent = fmt(totalPnl);
-  document.getElementById("openCount").textContent = positions.length;
-  document.getElementById("totalROI").textContent = (roi >= 0 ? "+" : "") + roi.toFixed(2) + "%";
-
-  const pnlCard = document.getElementById("pnlCard");
-  const pnlValue = document.getElementById("totalPnL");
-  const pnlSub = document.getElementById("pnlSub");
-  const invCard = document.getElementById("investmentCard");
-  const roiCard = document.getElementById("roiCard");
-  const roiValue = document.getElementById("totalROI");
-  const roiSub = document.getElementById("roiSub");
-
-  pnlValue.classList.remove("profit", "loss");
-  pnlCard.classList.remove("profit", "loss", "neutral");
-  invCard.classList.remove("profit", "loss", "neutral");
-  roiCard.classList.remove("profit", "loss", "neutral");
-  roiValue.classList.remove("profit", "loss");
-
-  if (totalPnl > 0) {
-    pnlValue.classList.add("profit");
-    pnlCard.classList.add("profit");
-    invCard.classList.add("profit");
-    roiCard.classList.add("profit");
-    roiValue.classList.add("profit");
-    pnlSub.textContent = "You are in profit 🟢";
-    roiSub.textContent = "Positive return 📈";
-  } else if (totalPnl < 0) {
-    pnlValue.classList.add("loss");
-    pnlCard.classList.add("loss");
-    invCard.classList.add("loss");
-    roiCard.classList.add("loss");
-    roiValue.classList.add("loss");
-    pnlSub.textContent = "You are in loss 🔴";
-    roiSub.textContent = "Negative return 📉";
-  } else {
-    pnlCard.classList.add("neutral");
-    invCard.classList.add("neutral");
-    roiCard.classList.add("neutral");
-    pnlSub.textContent = "No unrealized P&L yet";
-    roiSub.textContent = "Return on investment";
-  }
-}
-
-/* ---------- Refresh loop (manual only) ---------- */
-async function refreshPositions() {
-  if (!positions.length) {
-    updateLastUpdate();
-    return;
-  }
-  let anyFailed = false;
-  for (const p of positions) {
-    const data = await fetchFnoPrice(p.symbol);
-    if (!data) {
-      anyFailed = true;
-      continue;
+        // Restart the animation
+        svg.style.animation = "none";
+        void svg.offsetWidth;
+        svg.style.animation = "anim__hello 5s linear forwards";
+      }, 10);
     }
-    const ltp = parseFloat(data.ltp ?? 0);
-    const dayChange = parseFloat(data.dayChange ?? 0);
-    const dayChangePerc = parseFloat(data.dayChangePerc ?? 0);
-    const volume = parseInt(data.volume ?? 0, 10);
-    const oiDayChangePerc = parseFloat(data.oiDayChangePerc ?? 0);
-
-    if (ltp > 0) {
-      p.ltp = ltp;
-      p.dayChange = dayChange;
-      p.dayChangePerc = dayChangePerc;
-      p.volume = volume;
-      p.oiDayChangePerc = oiDayChangePerc;
-      p.pnl = (p.ltp - p.entry) * p.qty;
-      p.pnlPct = ((p.ltp - p.entry) / p.entry) * 100;
-      p.updated = true;
-    }
-  }
-  renderPositions();
-  updateLastUpdate();
-  if (anyFailed) {
-    console.warn("Kuch positions ka data fetch nahi ho paya. CORS extension ON hai?");
-  }
-}
-
-function updateLastUpdate() {
-  const now = new Date();
-  const timeStr = now.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-  document.getElementById("lastUpdate").textContent = "Last update: " + timeStr;
-}
-
-/* ---------- Init ---------- */
-loadPositions();
-renderPositions();
-
-// No auto-refresh. Manual refresh only.
-</script>
+  </script>
 </body>
 </html>
