@@ -616,7 +616,7 @@ function detectType(symbol) {
 /* ---------- Fetch NIFTY ---------- */
 async function fetchNifty() {
   try {
-    const res = await fetch("https://groww.in/v1/api/stocks_data/v1/accord_points/exchange/NSE/segment/CASH/latest_indices_ohlc/NIFTY", {
+    const res = await fetch("http://anycors.vercel.app/v2/cors?u=https://groww.in/v1/api/stocks_data/v1/accord_points/exchange/NSE/segment/CASH/latest_indices_ohlc/NIFTY", {
       method: "GET",
       headers: { "Accept": "application/json" }
     });
@@ -657,7 +657,7 @@ function renderNifty() {
 /* ---------- Fetch single F&O ---------- */
 async function fetchFnoPrice(symbol) {
   try {
-    const url = `https://groww.in/v1/api/stocks_fo_data/v1/tr_live_prices/exchange/NSE/segment/FNO/${encodeURIComponent(symbol)}/latest`;
+    const url = `http://anycors.vercel.app/v2/cors?u=https://groww.in/v1/api/stocks_fo_data/v1/tr_live_prices/exchange/NSE/segment/FNO/${encodeURIComponent(symbol)}/latest`;
     const res = await fetch(url, { method: "GET", headers: { "Accept": "application/json" } });
     if (!res.ok) throw new Error("HTTP " + res.status);
     const data = await res.json();
