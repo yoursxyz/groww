@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live F&O P&L Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0f4f8;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --ink: #0f172a;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --green: #10b981;
+  --green-bg: #d1fae5;
+  --green-glow: rgba(16,185,129,0.18);
+  --red: #ef4444;
+  --red-bg: #fee2e2;
+  --red-glow: rgba(239,68,68,0.18);
+  --accent: #3b82f6;
+  --accent-bg: #dbeafe;
+  --accent-glow: rgba(59,130,246,0.18);
+  --radius: 16px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 24px -6px rgba(0,0,0,0.08);
+  --shadow-lg: 0 1px 3px rgba(0,0,0,0.04), 0 16px 40px -8px rgba(0,0,0,0.12);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Inter", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-icon {
+  width: 48px; height: 48px;
+  background: linear-gradient(135deg, var(--accent), #6366f1);
+  border-radius: 14px;
+  display: grid; place-items: center;
+  color: #fff; font-size: 22px; font-weight: 800;
+  box-shadow: 0 4px 14px var(--accent-glow);
+}
+
+.brand h1 {
+  font-family: "Rajdhani", sans-serif;
+  font-size: clamp(1.6rem, 2.2vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  line-height: 1.1;
+}
+
+.brand p {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--green-bg);
+  color: var(--green);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(16,185,129,0.25);
+}
+
+.pulse {
+  width: 8px; height: 8px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse 1.6s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.5); }
+  70% { box-shadow: 0 0 0 10px rgba(16,185,129,0); }
+  100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+}
+
+/* Grid */
+.grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(12, 1fr);
+}
+
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  padding: 22px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.col-4 { grid-column: span 4; }
+.col-6 { grid-column: span 6; }
+.col-8 { grid-column: span 8; }
+.col-12 { grid-column: span 12; }
+
+@media (max-width: 900px) {
+  .col-4, .col-6, .col-8 { grid-column: span 12; }
+}
+
+.card-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Nifty Hero */
+.nifty-hero {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #fff;
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.nifty-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 120%, rgba(59,130,246,0.25), transparent 60%),
+    radial-gradient(circle at 80% -20%, rgba(16,185,129,0.18), transparent 50%);
+  pointer-events: none;
+}
+
+.nifty-hero .card-title { color: #94a3b8; }
+
+.nifty-value {
+  font-family: "Rajdhani", sans-serif;
+  font-size: clamp(2.6rem, 4vw, 3.6rem);
+  font-weight: 700;
+  line-height: 1;
+  position: relative;
+}
+
+.nifty-change {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-top: 8px;
+  padding: 4px 12px;
+  border-radius: 8px;
+  position: relative;
+}
+
+.nifty-change.up { background: rgba(16,185,129,0.18); color: #34d399; }
+.nifty-change.down { background: rgba(239,68,68,0.18); color: #f87171; }
+
+.nifty-meta {
+  display: flex;
+  gap: 24px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.meta-label { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; }
+.meta-value { font-size: 0.98rem; font-weight: 700; color: #e2e8f0; }
+
+/* Inputs */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.input-group label {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.input-group input, .input-group select {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: var(--surface-2);
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-group input:focus, .input-group select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-glow);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #6366f1);
+  color: #fff;
+  box-shadow: 0 4px 14px var(--accent-glow);
+}
+
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--accent-glow); }
+
+.btn-danger {
+  background: linear-gradient(135deg, var(--red), #f97316);
+  color: #fff;
+  box-shadow: 0 4px 14px var(--red-glow);
+}
+
+/* P&L Cards */
+.pl-card {
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.pl-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+}
+
+.pl-card.profit::before { background: linear-gradient(90deg, var(--green), #34d399); }
+.pl-card.loss::before { background: linear-gradient(90deg, var(--red), #f97316); }
+.pl-card.neutral::before { background: linear-gradient(90deg, var(--muted), #cbd5e1); }
+
+.pl-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.pl-value {
+  font-family: "Rajdhani", sans-serif;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.pl-value.profit { color: var(--green); }
+.pl-value.loss { color: var(--red); }
+
+.pl-sub {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+/* Position table */
+.positions-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.88rem;
+}
+
+.positions-table th {
+  text-align: left;
+  padding: 12px 14px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.positions-table td {
+  padding: 14px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+}
+
+.positions-table tr:last-child td { border-bottom: none; }
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.badge-ce { background: var(--accent-bg); color: var(--accent); }
+.badge-pe { background: #f3e8ff; color: #7c3aed; }
+
+.price-up { color: var(--green); }
+.price-down { color: var(--red); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* Animations */
+.flash-green { animation: flashGreen 0.6s ease; }
+.flash-red { animation: flashRed 0.6s ease; }
+
+@keyframes flashGreen {
+  0% { background: var(--green-bg); }
+  100% { background: var(--surface); }
+}
+
+@keyframes flashRed {
+  0% { background: var(--red-bg); }
+  100% { background: var(--surface); }
+}
+
+/* Footer */
+.footer-note {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 24px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .container { padding: 14px; }
+  .card { padding: 16px; }
+  .nifty-meta { gap: 14px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <div class="brand">
+      <div class="brand-icon">F&amp;O</div>
+      <div>
+        <h1>Live F&amp;O P&amp;L Dashboard</h1>
+        <p>NIFTY + F&amp;O positions with real-time P&amp;L</p>
+      </div>
+    </div>
+    <div class="live-badge">
+      <span class="pulse"></span>
+      Live Market
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- NIFTY Hero -->
+    <div class="card col-8 nifty-hero" id="niftyCard">
+      <div class="card-title">NIFTY 50 Index</div>
+      <div class="nifty-value" id="niftyPrice">---.--</div>
+      <div class="nifty-change" id="niftyChange">-- (--%)</div>
+      <div class="nifty-meta">
+        <div class="meta-item">
+          <span class="meta-label">Open</span>
+          <span class="meta-value" id="niftyOpen">--</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">High</span>
+          <span class="meta-value" id="niftyHigh">--</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Low</span>
+          <span class="meta-value" id="niftyLow">--</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Prev Close</span>
+          <span class="meta-value" id="niftyPrev">--</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Position -->
+    <div class="card col-4">
+      <div class="card-title">New Position</div>
+      <div class="input-group">
+        <label>F&amp;O Symbol</label>
+        <input type="text" id="symInput" placeholder="e.g. NIFTY26OCT22600CE" value="NIFTY26OCT22600CE">
+      </div>
+      <div class="input-group">
+        <label>Quantity (Lots)</label>
+        <input type="number" id="qtyInput" placeholder="e.g. 1" value="1">
+      </div>
+      <div class="input-group">
+        <label>Entry Price (₹)</label>
+        <input type="number" step="0.01" id="entryInput" placeholder="e.g. 150.00" value="150">
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-primary" onclick="addPosition()">Add Position</button>
+        <button class="btn btn-danger" onclick="clearAll()">Clear All</button>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="card col-4 pl-card neutral" id="investmentCard">
+      <div class="pl-label">Total Investment</div>
+      <div class="pl-value" id="totalInvestment">₹0.00</div>
+      <div class="pl-sub">Across all open positions</div>
+    </div>
+
+    <div class="card col-4 pl-card neutral" id="pnlCard">
+      <div class="pl-label">Unrealized P&amp;L</div>
+      <div class="pl-value" id="totalPnL">₹0.00</div>
+      <div class="pl-sub" id="pnlSub">--</div>
+    </div>
+
+    <div class="card col-4 pl-card neutral" id="countCard">
+      <div class="pl-label">Open Positions</div>
+      <div class="pl-value" id="openCount">0</div>
+      <div class="pl-sub">Active F&amp;O trades</div>
+    </div>
+
+    <!-- Positions Table -->
+    <div class="card col-12">
+      <div class="card-title">Open Positions</div>
+      <div style="overflow-x:auto;">
+        <table class="positions-table">
+          <thead>
+            <tr>
+              <th>Symbol</th>
+              <th>Type</th>
+              <th>Qty</th>
+              <th>Entry</th>
+              <th>LTP</th>
+              <th>Change</th>
+              <th>Investment</th>
+              <th>P&amp;L</th>
+              <th>P&amp;L %</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="positionsBody">
+            <tr>
+              <td colspan="10" style="text-align:center;color:var(--muted);padding:28px;">
+                No positions added yet. Use the form above to add a trade.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer-note">
+    Data sourced from Groww APIs. P&amp;L is indicative and for reference only. Market data auto-refreshes every 3 seconds.
+  </div>
+
+</div>
+
+<script>
+/* ---------- State ---------- */
+let positions = [];
+let niftyData = null;
+
+/* ---------- Helpers ---------- */
+const fmt = (n) => {
+  if (n == null || isNaN(n)) return "--";
+  return "₹" + n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+};
+const fmtNum = (n) => (n == null || isNaN(n)) ? "--" : n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmtPct = (n) => (n == null || isNaN(n)) ? "--" : (n > 0 ? "+" : "") + n.toFixed(2) + "%";
+
+function getLotSize(symbol) {
+  // Rough heuristic for NIFTY / BANKNIFTY; real lot size comes from contract info.
+  const s = symbol.toUpperCase();
+  if (s.startsWith("NIFTY")) return 25;
+  if (s.startsWith("BANKNIFTY") || s.startsWith("NIFTYBANK")) return 15;
+  return 25; // fallback
+}
+
+function parseChangePercent(symbolObj) {
+  // Groww sometimes sends change / percentChange in different keys
+  const p = symbolObj;
+  if (p.changePercent != null) return parseFloat(p.changePercent);
+  if (p.percent_change != null) return parseFloat(p.percent_change);
+  if (p.change != null && p.close != null && parseFloat(p.close) !== 0) {
+    return (parseFloat(p.change) / parseFloat(p.close)) * 100;
+  }
+  return 0;
+}
+
+/* ---------- Fetch NIFTY ---------- */
+async function fetchNifty() {
+  try {
+    const res = await fetch("https://groww.in/v1/api/stocks_data/v1/accord_points/exchange/NSE/segment/CASH/latest_indices_ohlc/NIFTY", {
+      method: "GET",
+      headers: { "Accept": "application/json" }
+    });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+    // Response shape: { open, high, low, close, dayHigh, dayLow, value, etc. }
+    niftyData = data;
+    renderNifty();
+  } catch (e) {
+    console.error("Nifty fetch failed", e);
+  }
+}
+
+function renderNifty() {
+  if (!niftyData) return;
+  const d = niftyData;
+  const close = parseFloat(d.close ?? d.value ?? 0);
+  const open = parseFloat(d.open ?? 0);
+  const high = parseFloat(d.high ?? d.dayHigh ?? 0);
+  const low = parseFloat(d.low ?? d.dayLow ?? 0);
+  const prev = parseFloat(d.previousClose ?? d.prevClose ?? close);
+  const change = close - prev;
+  const changePct = prev ? (change / prev) * 100 : 0;
+
+  document.getElementById("niftyPrice").textContent = fmtNum(close);
+  const chEl = document.getElementById("niftyChange");
+  chEl.textContent = `${change >= 0 ? "+" : ""}${fmtNum(change)} (${fmtPct(changePct)})`;
+  chEl.className = "nifty-change " + (change >= 0 ? "up" : "down");
+
+  document.getElementById("niftyOpen").textContent = fmtNum(open);
+  document.getElementById("niftyHigh").textContent = fmtNum(high);
+  document.getElementById("niftyLow").textContent = fmtNum(low);
+  document.getElementById("niftyPrev").textContent = fmtNum(prev);
+}
+
+/* ---------- Fetch single F&O ---------- */
+async function fetchFnoPrice(symbol) {
+  try {
+    const url = `https://groww.in/v1/api/stocks_fo_data/v1/tr_live_prices/exchange/NSE/segment/FNO/${encodeURIComponent(symbol)}/latest`;
+    const res = await fetch(url, { method: "GET", headers: { "Accept": "application/json" } });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+    return data;
+  } catch (e) {
+    console.error("F&O fetch failed for", symbol, e);
+    return null;
+  }
+}
+
+/* ---------- Positions ---------- */
+function addPosition() {
+  const sym = document.getElementById("symInput").value.trim().toUpperCase();
+  const qtyLots = parseInt(document.getElementById("qtyInput").value || "0", 10);
+  const entry = parseFloat(document.getElementById("entryInput").value || "0");
+  if (!sym || qtyLots <= 0 || entry <= 0) {
+    alert("Please enter valid Symbol, Quantity and Entry Price.");
+    return;
+  }
+  const lot = getLotSize(sym);
+  const totalQty = qtyLots * lot;
+  positions.push({
+    id: Date.now() + Math.random(),
+    symbol: sym,
+    lots: qtyLots,
+    lotSize: lot,
+    qty: totalQty,
+    entry: entry,
+    ltp: null,
+    change: null,
+    changePercent: null,
+    investment: totalQty * entry,
+    pnl: null,
+    pnlPct: null,
+    updated: false
+  });
+  savePositions();
+  renderPositions();
+  refreshPositions();
+}
+
+function removePosition(id) {
+  positions = positions.filter(p => p.id !== id);
+  savePositions();
+  renderPositions();
+  updateSummary();
+}
+
+function clearAll() {
+  if (!positions.length) return;
+  if (!confirm("Clear all positions?")) return;
+  positions = [];
+  savePositions();
+  renderPositions();
+  updateSummary();
+}
+
+function savePositions() {
+  try { localStorage.setItem("fno_positions", JSON.stringify(positions)); } catch (e) {}
+}
+
+function loadPositions() {
+  try {
+    const raw = localStorage.getItem("fno_positions");
+    if (raw) positions = JSON.parse(raw);
+  } catch (e) {}
+}
+
+/* ---------- Rendering ---------- */
+function renderPositions() {
+  const tbody = document.getElementById("positionsBody");
+  if (!positions.length) {
+    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:28px;">No positions added yet. Use the form above to add a trade.</td></tr>`;
+    updateSummary();
+    return;
+  }
+
+  let html = "";
+  for (const p of positions) {
+    const type = p.symbol.endsWith("CE") ? "CE" : p.symbol.endsWith("PE") ? "PE" : "FUT";
+    const badgeClass = type === "CE" ? "badge-ce" : type === "PE" ? "badge-pe" : "badge-ce";
+    const ltpStr = p.ltp != null ? fmtNum(p.ltp) : "--";
+    const changeStr = p.change != null ? (p.change >= 0 ? "+" : "") + fmtNum(p.change) : "--";
+    const changeClass = p.change != null ? (p.change >= 0 ? "price-up" : "price-down") : "";
+    const pnlStr = p.pnl != null ? fmt(p.pnl) : "--";
+    const pnlClass = p.pnl != null ? (p.pnl >= 0 ? "price-up" : "price-down") : "";
+    const pnlPctStr = p.pnlPct != null ? (p.pnlPct >= 0 ? "+" : "") + p.pnlPct.toFixed(2) + "%" : "--";
+
+    html += `<tr data-id="${p.id}">
+      <td>${p.symbol}</td>
+      <td><span class="badge ${badgeClass}">${type}</span></td>
+      <td>${p.lots} × ${p.lotSize}</td>
+      <td>${fmtNum(p.entry)}</td>
+      <td>${ltpStr}</td>
+      <td class="${changeClass}">${changeStr}</td>
+      <td>${fmt(p.investment)}</td>
+      <td class="${pnlClass}"><strong>${pnlStr}</strong></td>
+      <td class="${pnlClass}">${pnlPctStr}</td>
+      <td><button class="btn btn-danger" style="padding:6px 12px;font-size:0.78rem;" onclick="removePosition(${p.id})">Remove</button></td>
+    </tr>`;
+  }
+  tbody.innerHTML = html;
+  updateSummary();
+}
+
+function updateSummary() {
+  let totalInv = 0;
+  let totalPnl = 0;
+  for (const p of positions) {
+    totalInv += p.investment || 0;
+    if (p.pnl != null) totalPnl += p.pnl;
+  }
+
+  document.getElementById("totalInvestment").textContent = fmt(totalInv);
+  document.getElementById("totalPnL").textContent = fmt(totalPnl);
+  document.getElementById("openCount").textContent = positions.length;
+
+  const pnlCard = document.getElementById("pnlCard");
+  const pnlValue = document.getElementById("totalPnL");
+  const pnlSub = document.getElementById("pnlSub");
+  const invCard = document.getElementById("investmentCard");
+
+  pnlValue.classList.remove("profit", "loss");
+  pnlCard.classList.remove("profit", "loss", "neutral");
+  invCard.classList.remove("profit", "loss", "neutral");
+
+  if (totalPnl > 0) {
+    pnlValue.classList.add("profit");
+    pnlCard.classList.add("profit");
+    invCard.classList.add("profit");
+    pnlSub.textContent = "You are in profit 🟢";
+  } else if (totalPnl < 0) {
+    pnlValue.classList.add("loss");
+    pnlCard.classList.add("loss");
+    invCard.classList.add("loss");
+    pnlSub.textContent = "You are in loss 🔴";
+  } else {
+    pnlCard.classList.add("neutral");
+    invCard.classList.add("neutral");
+    pnlSub.textContent = "No unrealized P&L yet";
+  }
+}
+
+/* ---------- Refresh loop ---------- */
+async function refreshPositions() {
+  if (!positions.length) return;
+  for (const p of positions) {
+    const data = await fetchFnoPrice(p.symbol);
+    if (!data) continue;
+    // Groww response keys may vary; try common ones
+    const close = parseFloat(data.close ?? data.ltp ?? data.lastPrice ?? data.value ?? 0);
+    const open = parseFloat(data.open ?? 0);
+    const prev = parseFloat(data.previousClose ?? data.prevClose ?? open);
+    const change = close - prev;
+    const changePct = prev ? (change / prev) * 100 : 0;
+
+    if (close > 0) {
+      p.ltp = close;
+      p.change = change;
+      p.changePercent = changePct;
+      p.pnl = (p.ltp - p.entry) * p.qty;
+      p.pnlPct = ((p.ltp - p.entry) / p.entry) * 100;
+      p.updated = true;
+    }
+  }
+  renderPositions();
+}
+
+/* ---------- Init ---------- */
+loadPositions();
+renderPositions();
+fetchNifty();
+refreshPositions();
+
+// Auto refresh
+setInterval(() => {
+  fetchNifty();
+  refreshPositions();
+}, 3000);
+
+</script>
+</body>
+</html>
