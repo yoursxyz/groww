@@ -51,7 +51,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
   flex-wrap: wrap;
   gap: 12px;
 }
@@ -120,6 +120,44 @@ body {
   text-align: right;
 }
 
+/* CORS Alert */
+.cors-alert {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 1px solid #f59e0b;
+  border-radius: 14px;
+  padding: 18px 22px;
+  margin-bottom: 22px;
+  font-size: 0.88rem;
+  color: #78350f;
+}
+
+.cors-alert strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+}
+
+.cors-alert ol {
+  margin-left: 18px;
+  margin-top: 8px;
+}
+
+.cors-alert li {
+  margin-bottom: 4px;
+}
+
+.cors-alert a {
+  color: #92400e;
+  font-weight: 600;
+}
+
+.cors-alert code {
+  background: rgba(0,0,0,0.06);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.82rem;
+}
+
 /* Grid */
 .grid {
   display: grid;
@@ -158,6 +196,13 @@ body {
   letter-spacing: 1px;
   color: var(--muted);
   margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.card-title-left {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -223,6 +268,38 @@ body {
 
 .meta-label { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; }
 .meta-value { font-family: "Rajdhani", sans-serif; font-size: 1.15rem; font-weight: 700; color: #e2e8f0; }
+
+/* Refresh Button */
+.refresh-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.refresh-btn:hover {
+  background: var(--accent-light);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.refresh-btn.spin svg {
+  animation: spin 0.7s linear;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
 
 /* Inputs */
 .input-group {
@@ -335,33 +412,6 @@ body {
   font-weight: 500;
 }
 
-/* Mini stats row inside card */
-.mini-row {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid var(--border);
-}
-
-.mini-item {
-  text-align: center;
-}
-
-.mini-label {
-  font-size: 0.65rem;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.7px;
-}
-
-.mini-value {
-  font-family: "Rajdhani", sans-serif;
-  font-size: 1.05rem;
-  font-weight: 700;
-  margin-top: 2px;
-}
-
 /* Position table */
 .positions-table {
   width: 100%;
@@ -408,19 +458,6 @@ body {
 .price-up { color: var(--green); }
 .price-down { color: var(--red); }
 
-.bg-flash-green { animation: flashGreen 0.7s ease; }
-.bg-flash-red { animation: flashRed 0.7s ease; }
-
-@keyframes flashGreen {
-  0% { background: var(--green-light); }
-  100% { background: var(--surface); }
-}
-
-@keyframes flashRed {
-  0% { background: var(--red-light); }
-  100% { background: var(--surface); }
-}
-
 /* Footer */
 .footer-note {
   text-align: center;
@@ -464,11 +501,31 @@ body {
     </div>
   </div>
 
+  <!-- CORS Notice -->
+  <div class="cors-alert" id="corsAlert">
+    <strong>⚠️ CORS Issue? Browser API block kar raha hai?</strong>
+    Groww API directly browser se call karne par CORS error aa sakta hai. Iska solution:
+    <ol>
+      <li><strong>Chrome Extension:</strong> "Allow CORS" ya "CORS Unblock" extension install karo aur ON karke page refresh karo.</li>
+      <li><strong>Chrome Flags:</strong> Chrome ko <code>--disable-web-security</code> flag ke saath open karo (separate profile use karein).</li>
+      <li><strong>VS Code Live Server:</strong> File ko directly mat kholo. VS Code ka "Live Server" extension use karo.</li>
+    </ol>
+    <div style="margin-top:8px;font-size:0.82rem;color:#92400e;">
+      Manual refresh button use karein. Auto-refresh remove kar diya gaya hai taaki IP block na ho.
+    </div>
+  </div>
+
   <div class="grid">
 
     <!-- NIFTY Hero -->
     <div class="card col-8 nifty-hero" id="niftyCard">
-      <div class="card-title">NIFTY 50 Index</div>
+      <div class="card-title">
+        <span class="card-title-left">NIFTY 50 Index</span>
+        <button class="refresh-btn" id="niftyRefreshBtn" onclick="manualRefreshNifty()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+          Refresh
+        </button>
+      </div>
       <div class="nifty-value" id="niftyPrice">---.--</div>
       <div class="nifty-change" id="niftyChange">-- (--%)</div>
       <div class="nifty-meta">
@@ -497,7 +554,9 @@ body {
 
     <!-- Add Position -->
     <div class="card col-4">
-      <div class="card-title">New Position</div>
+      <div class="card-title">
+        <span class="card-title-left">New Position</span>
+      </div>
       <div class="input-group">
         <label>F&O Symbol</label>
         <input type="text" id="symInput" placeholder="e.g. NIFTY26OCT22600CE" value="NIFTY26OCT22600CE">
@@ -543,7 +602,13 @@ body {
 
     <!-- Positions Table -->
     <div class="card col-12">
-      <div class="card-title">Open Positions</div>
+      <div class="card-title">
+        <span class="card-title-left">Open Positions</span>
+        <button class="refresh-btn" id="posRefreshBtn" onclick="manualRefreshPositions()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+          Refresh All
+        </button>
+      </div>
       <div style="overflow-x:auto;">
         <table class="positions-table">
           <thead>
@@ -556,7 +621,7 @@ body {
               <th>Day Chg</th>
               <th>Day Chg %</th>
               <th>Volume</th>
-              <th>OI Change %</th>
+              <th>OI Chg %</th>
               <th>Investment</th>
               <th>P&L</th>
               <th>P&L %</th>
@@ -577,7 +642,7 @@ body {
   </div>
 
   <div class="footer-note">
-    Data sourced from Groww APIs. P&L is indicative and for reference only. Market data auto-refreshes every 3 seconds.
+    Data sourced from Groww APIs. P&L is indicative and for reference only. Use Refresh buttons to fetch latest data manually.
   </div>
 
 </div>
@@ -613,10 +678,18 @@ function detectType(symbol) {
   return "OPT";
 }
 
+/* ---------- CORS Error Handler ---------- */
+function handleFetchError(err, context) {
+  console.error(context + " fetch error:", err);
+  if (err.message && err.message.includes("CORS")) {
+    alert("CORS Error: Browser ne API request block kar di.\n\nSolution:\n1. Chrome extension 'Allow CORS' install karo\n2. Ya Chrome ko --disable-web-security flag se open karo\n3. Ya VS Code Live Server use karo");
+  }
+}
+
 /* ---------- Fetch NIFTY ---------- */
 async function fetchNifty() {
   try {
-    const res = await fetch("http://anycors.vercel.app/v2/cors?u=https://groww.in/v1/api/stocks_data/v1/accord_points/exchange/NSE/segment/CASH/latest_indices_ohlc/NIFTY", {
+    const res = await fetch("https://groww.in/v1/api/stocks_data/v1/accord_points/exchange/NSE/segment/CASH/latest_indices_ohlc/NIFTY", {
       method: "GET",
       headers: { "Accept": "application/json" }
     });
@@ -624,16 +697,17 @@ async function fetchNifty() {
     const data = await res.json();
     niftyData = data;
     renderNifty();
+    updateLastUpdate();
+    return true;
   } catch (e) {
-    console.error("Nifty fetch failed", e);
+    handleFetchError(e, "Nifty");
+    return false;
   }
 }
 
 function renderNifty() {
   if (!niftyData) return;
   const d = niftyData;
-  // API response format:
-  // close, dayChange, dayChangePerc, high, low, open, value, symbol, tsInMillis, yearHighPrice, yearLowPrice, type
   const close = parseFloat(d.close ?? 0);
   const open = parseFloat(d.open ?? 0);
   const high = parseFloat(d.high ?? 0);
@@ -657,7 +731,7 @@ function renderNifty() {
 /* ---------- Fetch single F&O ---------- */
 async function fetchFnoPrice(symbol) {
   try {
-    const url = `http://anycors.vercel.app/v2/cors?u=https://groww.in/v1/api/stocks_fo_data/v1/tr_live_prices/exchange/NSE/segment/FNO/${encodeURIComponent(symbol)}/latest`;
+    const url = `https://groww.in/v1/api/stocks_fo_data/v1/tr_live_prices/exchange/NSE/segment/FNO/${encodeURIComponent(symbol)}/latest`;
     const res = await fetch(url, { method: "GET", headers: { "Accept": "application/json" } });
     if (!res.ok) throw new Error("HTTP " + res.status);
     const data = await res.json();
@@ -666,6 +740,32 @@ async function fetchFnoPrice(symbol) {
     console.error("F&O fetch failed for", symbol, e);
     return null;
   }
+}
+
+/* ---------- Manual Refresh ---------- */
+async function manualRefreshNifty() {
+  const btn = document.getElementById("niftyRefreshBtn");
+  btn.classList.add("spin");
+  btn.disabled = true;
+  const ok = await fetchNifty();
+  setTimeout(() => {
+    btn.classList.remove("spin");
+    btn.disabled = false;
+  }, 700);
+  if (!ok) {
+    alert("NIFTY data fetch nahi ho paya. CORS extension ON hai?");
+  }
+}
+
+async function manualRefreshPositions() {
+  const btn = document.getElementById("posRefreshBtn");
+  btn.classList.add("spin");
+  btn.disabled = true;
+  await refreshPositions();
+  setTimeout(() => {
+    btn.classList.remove("spin");
+    btn.disabled = false;
+  }, 700);
 }
 
 /* ---------- Positions ---------- */
@@ -698,7 +798,6 @@ function addPosition() {
   });
   savePositions();
   renderPositions();
-  refreshPositions();
 }
 
 function removePosition(id) {
@@ -718,12 +817,12 @@ function clearAll() {
 }
 
 function savePositions() {
-  try { localStorage.setItem("fno_positions_v2", JSON.stringify(positions)); } catch (e) {}
+  try { localStorage.setItem("fno_positions_v3", JSON.stringify(positions)); } catch (e) {}
 }
 
 function loadPositions() {
   try {
-    const raw = localStorage.getItem("fno_positions_v2");
+    const raw = localStorage.getItem("fno_positions_v3");
     if (raw) positions = JSON.parse(raw);
   } catch (e) {}
 }
@@ -775,13 +874,9 @@ function renderPositions() {
 function updateSummary() {
   let totalInv = 0;
   let totalPnl = 0;
-  let activeCount = 0;
   for (const p of positions) {
     totalInv += p.investment || 0;
-    if (p.pnl != null) {
-      totalPnl += p.pnl;
-      activeCount++;
-    }
+    if (p.pnl != null) totalPnl += p.pnl;
   }
 
   const roi = totalInv > 0 ? (totalPnl / totalInv) * 100 : 0;
@@ -830,19 +925,19 @@ function updateSummary() {
   }
 }
 
-/* ---------- Refresh loop ---------- */
+/* ---------- Refresh loop (manual only) ---------- */
 async function refreshPositions() {
-  if (!positions.length) return;
+  if (!positions.length) {
+    updateLastUpdate();
+    return;
+  }
+  let anyFailed = false;
   for (const p of positions) {
     const data = await fetchFnoPrice(p.symbol);
-    if (!data) continue;
-
-    // API response format:
-    // type, symbol, tsInMillis, open, high, low, close, ltp, dayChange, dayChangePerc,
-    // lowPriceRange, highPriceRange, volume, lowTradeRange, highTradeRange,
-    // totalBuyQty, totalSellQty, openInterest, prevOpenInterest, oiDayChange, oiDayChangePerc,
-    // lastTradeQty, lastTradeTime
-    // Note: close = previous close, ltp = current price
+    if (!data) {
+      anyFailed = true;
+      continue;
+    }
     const ltp = parseFloat(data.ltp ?? 0);
     const dayChange = parseFloat(data.dayChange ?? 0);
     const dayChangePerc = parseFloat(data.dayChangePerc ?? 0);
@@ -862,6 +957,9 @@ async function refreshPositions() {
   }
   renderPositions();
   updateLastUpdate();
+  if (anyFailed) {
+    console.warn("Kuch positions ka data fetch nahi ho paya. CORS extension ON hai?");
+  }
 }
 
 function updateLastUpdate() {
@@ -873,15 +971,8 @@ function updateLastUpdate() {
 /* ---------- Init ---------- */
 loadPositions();
 renderPositions();
-fetchNifty();
-refreshPositions();
 
-// Auto refresh every 3 seconds
-setInterval(() => {
-  fetchNifty();
-  refreshPositions();
-}, 3000);
-
+// No auto-refresh. Manual refresh only.
 </script>
 </body>
 </html>
