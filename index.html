@@ -15,14 +15,16 @@
   --muted: #64748b;
   --border: #e2e8f0;
   --green: #10b981;
-  --green-bg: #d1fae5;
-  --green-glow: rgba(16,185,129,0.18);
+  --green-light: #d1fae5;
+  --green-glow: rgba(16,185,129,0.15);
   --red: #ef4444;
-  --red-bg: #fee2e2;
-  --red-glow: rgba(239,68,68,0.18);
+  --red-light: #fee2e2;
+  --red-glow: rgba(239,68,68,0.15);
   --accent: #3b82f6;
-  --accent-bg: #dbeafe;
-  --accent-glow: rgba(59,130,246,0.18);
+  --accent-light: #dbeafe;
+  --accent-glow: rgba(59,130,246,0.15);
+  --purple: #8b5cf6;
+  --orange: #f97316;
   --radius: 16px;
   --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 24px -6px rgba(0,0,0,0.08);
   --shadow-lg: 0 1px 3px rgba(0,0,0,0.04), 0 16px 40px -8px rgba(0,0,0,0.12);
@@ -39,7 +41,7 @@ body {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1300px;
   margin: 0 auto;
   padding: 24px;
 }
@@ -61,24 +63,24 @@ body {
 }
 
 .brand-icon {
-  width: 48px; height: 48px;
-  background: linear-gradient(135deg, var(--accent), #6366f1);
-  border-radius: 14px;
+  width: 52px; height: 52px;
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  border-radius: 16px;
   display: grid; place-items: center;
   color: #fff; font-size: 22px; font-weight: 800;
-  box-shadow: 0 4px 14px var(--accent-glow);
+  box-shadow: 0 4px 16px var(--accent-glow);
 }
 
 .brand h1 {
   font-family: "Rajdhani", sans-serif;
-  font-size: clamp(1.6rem, 2.2vw, 2.2rem);
+  font-size: clamp(1.7rem, 2.4vw, 2.4rem);
   font-weight: 700;
   letter-spacing: 0.5px;
   line-height: 1.1;
 }
 
 .brand p {
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   color: var(--muted);
   margin-top: 2px;
 }
@@ -87,13 +89,13 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: var(--green-bg);
+  background: var(--green-light);
   color: var(--green);
   font-size: 0.78rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
-  padding: 8px 16px;
+  letter-spacing: 0.9px;
+  padding: 8px 18px;
   border-radius: 999px;
   border: 1px solid rgba(16,185,129,0.25);
 }
@@ -109,6 +111,13 @@ body {
   0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.5); }
   70% { box-shadow: 0 0 0 10px rgba(16,185,129,0); }
   100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+}
+
+.last-update {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 4px;
+  text-align: right;
 }
 
 /* Grid */
@@ -131,13 +140,15 @@ body {
   box-shadow: var(--shadow-lg);
 }
 
+.col-3 { grid-column: span 3; }
 .col-4 { grid-column: span 4; }
 .col-6 { grid-column: span 6; }
 .col-8 { grid-column: span 8; }
+.col-9 { grid-column: span 9; }
 .col-12 { grid-column: span 12; }
 
-@media (max-width: 900px) {
-  .col-4, .col-6, .col-8 { grid-column: span 12; }
+@media (max-width: 1024px) {
+  .col-3, .col-4, .col-6, .col-8, .col-9 { grid-column: span 12; }
 }
 
 .card-title {
@@ -166,8 +177,9 @@ body {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 20% 120%, rgba(59,130,246,0.25), transparent 60%),
-    radial-gradient(circle at 80% -20%, rgba(16,185,129,0.18), transparent 50%);
+    radial-gradient(circle at 15% 110%, rgba(59,130,246,0.28), transparent 55%),
+    radial-gradient(circle at 85% -10%, rgba(16,185,129,0.2), transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(139,92,246,0.08), transparent 60%);
   pointer-events: none;
 }
 
@@ -175,7 +187,7 @@ body {
 
 .nifty-value {
   font-family: "Rajdhani", sans-serif;
-  font-size: clamp(2.6rem, 4vw, 3.6rem);
+  font-size: clamp(2.8rem, 4.5vw, 4rem);
   font-weight: 700;
   line-height: 1;
   position: relative;
@@ -185,11 +197,11 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 700;
-  margin-top: 8px;
-  padding: 4px 12px;
-  border-radius: 8px;
+  margin-top: 10px;
+  padding: 5px 14px;
+  border-radius: 10px;
   position: relative;
 }
 
@@ -198,19 +210,19 @@ body {
 
 .nifty-meta {
   display: flex;
-  gap: 24px;
-  margin-top: 18px;
+  gap: 28px;
+  margin-top: 22px;
   flex-wrap: wrap;
 }
 
 .meta-item {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
 .meta-label { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; }
-.meta-value { font-size: 0.98rem; font-weight: 700; color: #e2e8f0; }
+.meta-value { font-family: "Rajdhani", sans-serif; font-size: 1.15rem; font-weight: 700; color: #e2e8f0; }
 
 /* Inputs */
 .input-group {
@@ -221,7 +233,7 @@ body {
 }
 
 .input-group label {
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   font-weight: 600;
   color: var(--muted);
   text-transform: uppercase;
@@ -261,7 +273,7 @@ body {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent), #6366f1);
+  background: linear-gradient(135deg, var(--accent), var(--purple));
   color: #fff;
   box-shadow: 0 4px 14px var(--accent-glow);
 }
@@ -269,9 +281,14 @@ body {
 .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--accent-glow); }
 
 .btn-danger {
-  background: linear-gradient(135deg, var(--red), #f97316);
+  background: linear-gradient(135deg, var(--red), var(--orange));
   color: #fff;
   box-shadow: 0 4px 14px var(--red-glow);
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.78rem;
 }
 
 /* P&L Cards */
@@ -318,6 +335,33 @@ body {
   font-weight: 500;
 }
 
+/* Mini stats row inside card */
+.mini-row {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.mini-item {
+  text-align: center;
+}
+
+.mini-label {
+  font-size: 0.65rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.mini-value {
+  font-family: "Rajdhani", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
 /* Position table */
 .positions-table {
   width: 100%;
@@ -329,19 +373,21 @@ body {
 .positions-table th {
   text-align: left;
   padding: 12px 14px;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.8px;
   color: var(--muted);
   border-bottom: 1px solid var(--border);
   background: var(--surface-2);
+  white-space: nowrap;
 }
 
 .positions-table td {
   padding: 14px;
   border-bottom: 1px solid var(--border);
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .positions-table tr:last-child td { border-bottom: none; }
@@ -355,29 +401,23 @@ body {
   text-transform: uppercase;
 }
 
-.badge-ce { background: var(--accent-bg); color: var(--accent); }
+.badge-ce { background: var(--accent-light); color: var(--accent); }
 .badge-pe { background: #f3e8ff; color: #7c3aed; }
+.badge-fut { background: #fef3c7; color: #d97706; }
 
 .price-up { color: var(--green); }
 .price-down { color: var(--red); }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
-/* Animations */
-.flash-green { animation: flashGreen 0.6s ease; }
-.flash-red { animation: flashRed 0.6s ease; }
+.bg-flash-green { animation: flashGreen 0.7s ease; }
+.bg-flash-red { animation: flashRed 0.7s ease; }
 
 @keyframes flashGreen {
-  0% { background: var(--green-bg); }
+  0% { background: var(--green-light); }
   100% { background: var(--surface); }
 }
 
 @keyframes flashRed {
-  0% { background: var(--red-bg); }
+  0% { background: var(--red-light); }
   100% { background: var(--surface); }
 }
 
@@ -389,11 +429,17 @@ body {
   margin-top: 24px;
 }
 
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
 /* Responsive */
 @media (max-width: 600px) {
   .container { padding: 14px; }
   .card { padding: 16px; }
-  .nifty-meta { gap: 14px; }
+  .nifty-meta { gap: 16px; }
 }
 </style>
 </head>
@@ -403,15 +449,18 @@ body {
 
   <div class="header">
     <div class="brand">
-      <div class="brand-icon">F&amp;O</div>
+      <div class="brand-icon">F&O</div>
       <div>
-        <h1>Live F&amp;O P&amp;L Dashboard</h1>
-        <p>NIFTY + F&amp;O positions with real-time P&amp;L</p>
+        <h1>Live F&O P&L Dashboard</h1>
+        <p>NIFTY + F&O positions with real-time P&L tracking</p>
       </div>
     </div>
-    <div class="live-badge">
-      <span class="pulse"></span>
-      Live Market
+    <div>
+      <div class="live-badge">
+        <span class="pulse"></span>
+        Live Market
+      </div>
+      <div class="last-update" id="lastUpdate">Last update: --</div>
     </div>
   </div>
 
@@ -439,6 +488,10 @@ body {
           <span class="meta-label">Prev Close</span>
           <span class="meta-value" id="niftyPrev">--</span>
         </div>
+        <div class="meta-item">
+          <span class="meta-label">Day Change</span>
+          <span class="meta-value" id="niftyDayChange">--</span>
+        </div>
       </div>
     </div>
 
@@ -446,7 +499,7 @@ body {
     <div class="card col-4">
       <div class="card-title">New Position</div>
       <div class="input-group">
-        <label>F&amp;O Symbol</label>
+        <label>F&O Symbol</label>
         <input type="text" id="symInput" placeholder="e.g. NIFTY26OCT22600CE" value="NIFTY26OCT22600CE">
       </div>
       <div class="input-group">
@@ -464,22 +517,28 @@ body {
     </div>
 
     <!-- Summary Cards -->
-    <div class="card col-4 pl-card neutral" id="investmentCard">
+    <div class="card col-3 pl-card neutral" id="investmentCard">
       <div class="pl-label">Total Investment</div>
       <div class="pl-value" id="totalInvestment">₹0.00</div>
       <div class="pl-sub">Across all open positions</div>
     </div>
 
-    <div class="card col-4 pl-card neutral" id="pnlCard">
-      <div class="pl-label">Unrealized P&amp;L</div>
+    <div class="card col-3 pl-card neutral" id="pnlCard">
+      <div class="pl-label">Unrealized P&L</div>
       <div class="pl-value" id="totalPnL">₹0.00</div>
       <div class="pl-sub" id="pnlSub">--</div>
     </div>
 
-    <div class="card col-4 pl-card neutral" id="countCard">
+    <div class="card col-3 pl-card neutral" id="countCard">
       <div class="pl-label">Open Positions</div>
       <div class="pl-value" id="openCount">0</div>
-      <div class="pl-sub">Active F&amp;O trades</div>
+      <div class="pl-sub">Active F&O trades</div>
+    </div>
+
+    <div class="card col-3 pl-card neutral" id="roiCard">
+      <div class="pl-label">Total ROI</div>
+      <div class="pl-value" id="totalROI">0.00%</div>
+      <div class="pl-sub" id="roiSub">Return on investment</div>
     </div>
 
     <!-- Positions Table -->
@@ -494,16 +553,19 @@ body {
               <th>Qty</th>
               <th>Entry</th>
               <th>LTP</th>
-              <th>Change</th>
+              <th>Day Chg</th>
+              <th>Day Chg %</th>
+              <th>Volume</th>
+              <th>OI Change %</th>
               <th>Investment</th>
-              <th>P&amp;L</th>
-              <th>P&amp;L %</th>
+              <th>P&L</th>
+              <th>P&L %</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody id="positionsBody">
             <tr>
-              <td colspan="10" style="text-align:center;color:var(--muted);padding:28px;">
+              <td colspan="13" style="text-align:center;color:var(--muted);padding:32px;">
                 No positions added yet. Use the form above to add a trade.
               </td>
             </tr>
@@ -515,7 +577,7 @@ body {
   </div>
 
   <div class="footer-note">
-    Data sourced from Groww APIs. P&amp;L is indicative and for reference only. Market data auto-refreshes every 3 seconds.
+    Data sourced from Groww APIs. P&L is indicative and for reference only. Market data auto-refreshes every 3 seconds.
   </div>
 
 </div>
@@ -531,25 +593,24 @@ const fmt = (n) => {
   return "₹" + n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 const fmtNum = (n) => (n == null || isNaN(n)) ? "--" : n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const fmtPct = (n) => (n == null || isNaN(n)) ? "--" : (n > 0 ? "+" : "") + n.toFixed(2) + "%";
+const fmtInt = (n) => (n == null || isNaN(n)) ? "--" : n.toLocaleString("en-IN");
+const fmtPct = (n) => (n == null || isNaN(n)) ? "--" : (n >= 0 ? "+" : "") + n.toFixed(2) + "%";
 
 function getLotSize(symbol) {
-  // Rough heuristic for NIFTY / BANKNIFTY; real lot size comes from contract info.
   const s = symbol.toUpperCase();
   if (s.startsWith("NIFTY")) return 25;
   if (s.startsWith("BANKNIFTY") || s.startsWith("NIFTYBANK")) return 15;
-  return 25; // fallback
+  if (s.startsWith("FINNIFTY")) return 25;
+  if (s.startsWith("SENSEX")) return 10;
+  return 25;
 }
 
-function parseChangePercent(symbolObj) {
-  // Groww sometimes sends change / percentChange in different keys
-  const p = symbolObj;
-  if (p.changePercent != null) return parseFloat(p.changePercent);
-  if (p.percent_change != null) return parseFloat(p.percent_change);
-  if (p.change != null && p.close != null && parseFloat(p.close) !== 0) {
-    return (parseFloat(p.change) / parseFloat(p.close)) * 100;
-  }
-  return 0;
+function detectType(symbol) {
+  const s = symbol.toUpperCase();
+  if (s.endsWith("CE")) return "CE";
+  if (s.endsWith("PE")) return "PE";
+  if (s.includes("FUT")) return "FUT";
+  return "OPT";
 }
 
 /* ---------- Fetch NIFTY ---------- */
@@ -561,7 +622,6 @@ async function fetchNifty() {
     });
     if (!res.ok) throw new Error("HTTP " + res.status);
     const data = await res.json();
-    // Response shape: { open, high, low, close, dayHigh, dayLow, value, etc. }
     niftyData = data;
     renderNifty();
   } catch (e) {
@@ -572,23 +632,26 @@ async function fetchNifty() {
 function renderNifty() {
   if (!niftyData) return;
   const d = niftyData;
-  const close = parseFloat(d.close ?? d.value ?? 0);
+  // API response format:
+  // close, dayChange, dayChangePerc, high, low, open, value, symbol, tsInMillis, yearHighPrice, yearLowPrice, type
+  const close = parseFloat(d.close ?? 0);
   const open = parseFloat(d.open ?? 0);
-  const high = parseFloat(d.high ?? d.dayHigh ?? 0);
-  const low = parseFloat(d.low ?? d.dayLow ?? 0);
-  const prev = parseFloat(d.previousClose ?? d.prevClose ?? close);
-  const change = close - prev;
-  const changePct = prev ? (change / prev) * 100 : 0;
+  const high = parseFloat(d.high ?? 0);
+  const low = parseFloat(d.low ?? 0);
+  const dayChange = parseFloat(d.dayChange ?? 0);
+  const dayChangePerc = parseFloat(d.dayChangePerc ?? 0);
+  const prevClose = close - dayChange;
 
   document.getElementById("niftyPrice").textContent = fmtNum(close);
   const chEl = document.getElementById("niftyChange");
-  chEl.textContent = `${change >= 0 ? "+" : ""}${fmtNum(change)} (${fmtPct(changePct)})`;
-  chEl.className = "nifty-change " + (change >= 0 ? "up" : "down");
+  chEl.textContent = `${dayChange >= 0 ? "+" : ""}${fmtNum(dayChange)} (${fmtPct(dayChangePerc)})`;
+  chEl.className = "nifty-change " + (dayChange >= 0 ? "up" : "down");
 
   document.getElementById("niftyOpen").textContent = fmtNum(open);
   document.getElementById("niftyHigh").textContent = fmtNum(high);
   document.getElementById("niftyLow").textContent = fmtNum(low);
-  document.getElementById("niftyPrev").textContent = fmtNum(prev);
+  document.getElementById("niftyPrev").textContent = fmtNum(prevClose);
+  document.getElementById("niftyDayChange").textContent = fmtNum(dayChange);
 }
 
 /* ---------- Fetch single F&O ---------- */
@@ -624,8 +687,10 @@ function addPosition() {
     qty: totalQty,
     entry: entry,
     ltp: null,
-    change: null,
-    changePercent: null,
+    dayChange: null,
+    dayChangePerc: null,
+    volume: null,
+    oiDayChangePerc: null,
     investment: totalQty * entry,
     pnl: null,
     pnlPct: null,
@@ -653,12 +718,12 @@ function clearAll() {
 }
 
 function savePositions() {
-  try { localStorage.setItem("fno_positions", JSON.stringify(positions)); } catch (e) {}
+  try { localStorage.setItem("fno_positions_v2", JSON.stringify(positions)); } catch (e) {}
 }
 
 function loadPositions() {
   try {
-    const raw = localStorage.getItem("fno_positions");
+    const raw = localStorage.getItem("fno_positions_v2");
     if (raw) positions = JSON.parse(raw);
   } catch (e) {}
 }
@@ -667,33 +732,40 @@ function loadPositions() {
 function renderPositions() {
   const tbody = document.getElementById("positionsBody");
   if (!positions.length) {
-    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:28px;">No positions added yet. Use the form above to add a trade.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="13" style="text-align:center;color:var(--muted);padding:32px;">No positions added yet. Use the form above to add a trade.</td></tr>`;
     updateSummary();
     return;
   }
 
   let html = "";
   for (const p of positions) {
-    const type = p.symbol.endsWith("CE") ? "CE" : p.symbol.endsWith("PE") ? "PE" : "FUT";
-    const badgeClass = type === "CE" ? "badge-ce" : type === "PE" ? "badge-pe" : "badge-ce";
+    const type = detectType(p.symbol);
+    const badgeClass = type === "CE" ? "badge-ce" : type === "PE" ? "badge-pe" : "badge-fut";
     const ltpStr = p.ltp != null ? fmtNum(p.ltp) : "--";
-    const changeStr = p.change != null ? (p.change >= 0 ? "+" : "") + fmtNum(p.change) : "--";
-    const changeClass = p.change != null ? (p.change >= 0 ? "price-up" : "price-down") : "";
+    const dayChgStr = p.dayChange != null ? (p.dayChange >= 0 ? "+" : "") + fmtNum(p.dayChange) : "--";
+    const dayChgClass = p.dayChange != null ? (p.dayChange >= 0 ? "price-up" : "price-down") : "";
+    const dayChgPctStr = p.dayChangePerc != null ? fmtPct(p.dayChangePerc) : "--";
+    const volStr = p.volume != null ? fmtInt(p.volume) : "--";
+    const oiStr = p.oiDayChangePerc != null ? fmtPct(p.oiDayChangePerc) : "--";
+    const oiClass = p.oiDayChangePerc != null ? (p.oiDayChangePerc >= 0 ? "price-up" : "price-down") : "";
     const pnlStr = p.pnl != null ? fmt(p.pnl) : "--";
     const pnlClass = p.pnl != null ? (p.pnl >= 0 ? "price-up" : "price-down") : "";
     const pnlPctStr = p.pnlPct != null ? (p.pnlPct >= 0 ? "+" : "") + p.pnlPct.toFixed(2) + "%" : "--";
 
     html += `<tr data-id="${p.id}">
-      <td>${p.symbol}</td>
+      <td><strong>${p.symbol}</strong></td>
       <td><span class="badge ${badgeClass}">${type}</span></td>
       <td>${p.lots} × ${p.lotSize}</td>
       <td>${fmtNum(p.entry)}</td>
-      <td>${ltpStr}</td>
-      <td class="${changeClass}">${changeStr}</td>
+      <td><strong>${ltpStr}</strong></td>
+      <td class="${dayChgClass}">${dayChgStr}</td>
+      <td class="${dayChgClass}">${dayChgPctStr}</td>
+      <td>${volStr}</td>
+      <td class="${oiClass}">${oiStr}</td>
       <td>${fmt(p.investment)}</td>
       <td class="${pnlClass}"><strong>${pnlStr}</strong></td>
       <td class="${pnlClass}">${pnlPctStr}</td>
-      <td><button class="btn btn-danger" style="padding:6px 12px;font-size:0.78rem;" onclick="removePosition(${p.id})">Remove</button></td>
+      <td><button class="btn btn-danger btn-sm" onclick="removePosition(${p.id})">Remove</button></td>
     </tr>`;
   }
   tbody.innerHTML = html;
@@ -703,38 +775,58 @@ function renderPositions() {
 function updateSummary() {
   let totalInv = 0;
   let totalPnl = 0;
+  let activeCount = 0;
   for (const p of positions) {
     totalInv += p.investment || 0;
-    if (p.pnl != null) totalPnl += p.pnl;
+    if (p.pnl != null) {
+      totalPnl += p.pnl;
+      activeCount++;
+    }
   }
+
+  const roi = totalInv > 0 ? (totalPnl / totalInv) * 100 : 0;
 
   document.getElementById("totalInvestment").textContent = fmt(totalInv);
   document.getElementById("totalPnL").textContent = fmt(totalPnl);
   document.getElementById("openCount").textContent = positions.length;
+  document.getElementById("totalROI").textContent = (roi >= 0 ? "+" : "") + roi.toFixed(2) + "%";
 
   const pnlCard = document.getElementById("pnlCard");
   const pnlValue = document.getElementById("totalPnL");
   const pnlSub = document.getElementById("pnlSub");
   const invCard = document.getElementById("investmentCard");
+  const roiCard = document.getElementById("roiCard");
+  const roiValue = document.getElementById("totalROI");
+  const roiSub = document.getElementById("roiSub");
 
   pnlValue.classList.remove("profit", "loss");
   pnlCard.classList.remove("profit", "loss", "neutral");
   invCard.classList.remove("profit", "loss", "neutral");
+  roiCard.classList.remove("profit", "loss", "neutral");
+  roiValue.classList.remove("profit", "loss");
 
   if (totalPnl > 0) {
     pnlValue.classList.add("profit");
     pnlCard.classList.add("profit");
     invCard.classList.add("profit");
+    roiCard.classList.add("profit");
+    roiValue.classList.add("profit");
     pnlSub.textContent = "You are in profit 🟢";
+    roiSub.textContent = "Positive return 📈";
   } else if (totalPnl < 0) {
     pnlValue.classList.add("loss");
     pnlCard.classList.add("loss");
     invCard.classList.add("loss");
+    roiCard.classList.add("loss");
+    roiValue.classList.add("loss");
     pnlSub.textContent = "You are in loss 🔴";
+    roiSub.textContent = "Negative return 📉";
   } else {
     pnlCard.classList.add("neutral");
     invCard.classList.add("neutral");
+    roiCard.classList.add("neutral");
     pnlSub.textContent = "No unrealized P&L yet";
+    roiSub.textContent = "Return on investment";
   }
 }
 
@@ -744,23 +836,38 @@ async function refreshPositions() {
   for (const p of positions) {
     const data = await fetchFnoPrice(p.symbol);
     if (!data) continue;
-    // Groww response keys may vary; try common ones
-    const close = parseFloat(data.close ?? data.ltp ?? data.lastPrice ?? data.value ?? 0);
-    const open = parseFloat(data.open ?? 0);
-    const prev = parseFloat(data.previousClose ?? data.prevClose ?? open);
-    const change = close - prev;
-    const changePct = prev ? (change / prev) * 100 : 0;
 
-    if (close > 0) {
-      p.ltp = close;
-      p.change = change;
-      p.changePercent = changePct;
+    // API response format:
+    // type, symbol, tsInMillis, open, high, low, close, ltp, dayChange, dayChangePerc,
+    // lowPriceRange, highPriceRange, volume, lowTradeRange, highTradeRange,
+    // totalBuyQty, totalSellQty, openInterest, prevOpenInterest, oiDayChange, oiDayChangePerc,
+    // lastTradeQty, lastTradeTime
+    // Note: close = previous close, ltp = current price
+    const ltp = parseFloat(data.ltp ?? 0);
+    const dayChange = parseFloat(data.dayChange ?? 0);
+    const dayChangePerc = parseFloat(data.dayChangePerc ?? 0);
+    const volume = parseInt(data.volume ?? 0, 10);
+    const oiDayChangePerc = parseFloat(data.oiDayChangePerc ?? 0);
+
+    if (ltp > 0) {
+      p.ltp = ltp;
+      p.dayChange = dayChange;
+      p.dayChangePerc = dayChangePerc;
+      p.volume = volume;
+      p.oiDayChangePerc = oiDayChangePerc;
       p.pnl = (p.ltp - p.entry) * p.qty;
       p.pnlPct = ((p.ltp - p.entry) / p.entry) * 100;
       p.updated = true;
     }
   }
   renderPositions();
+  updateLastUpdate();
+}
+
+function updateLastUpdate() {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  document.getElementById("lastUpdate").textContent = "Last update: " + timeStr;
 }
 
 /* ---------- Init ---------- */
@@ -769,7 +876,7 @@ renderPositions();
 fetchNifty();
 refreshPositions();
 
-// Auto refresh
+// Auto refresh every 3 seconds
 setInterval(() => {
   fetchNifty();
   refreshPositions();
